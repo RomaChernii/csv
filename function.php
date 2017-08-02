@@ -1,9 +1,9 @@
 <?php
-	function get_products(){
+	function get_products() {
 		
 	  global $link;
 
-	  $sql  = 'SELECT * FROM product WHERE qty>0 ORDER BY id ';
+	  $sql = 'SELECT * FROM product WHERE qty>0 ORDER BY id ';
 		
 	  $result = mysqli_query($link, $sql);
 		

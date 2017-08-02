@@ -87,7 +87,7 @@
         $mysqli = $GLOBALS['link'];
         foreach ($array as $row) {
           $row = str_getcsv($row, ";");
-          $result = mysqli_query($mysqli, 'SELECT * FROM product WHERE product_name="'.$row[0].'" and warehouses="'.$row[2].'"');
+          $result = mysqli_query($mysqli, 'SELECT * FROM product WHERE product_name="' . $row[0] . '" and warehouses="' . $row[2] . '"');
           $myrow = mysqli_fetch_array($result);
           if (!empty($myrow['id'])) {
             $qty = $row[1] + $myrow['qty'];
