@@ -111,11 +111,9 @@
               }
             }
           } 
-        unlink($uploads_dir.$name);
-        }
+        @unlink($uploads_dir.$name);}
       }
     }
-    $messangers = array();
     foreach($messangers as $message) {
       echo $message ;
     }
