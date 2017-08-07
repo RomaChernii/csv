@@ -114,8 +114,10 @@
         @unlink($uploads_dir.$name);}
       }
     }
-    foreach($messangers as $message) {
-      echo $message ;
+    if (isset ($messangers)) {
+      foreach($messangers as $message) {
+        echo $message ;
+      }
     }
   }  
   
