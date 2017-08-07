@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Авг 05 2017 г., 20:29
+-- Время создания: Авг 07 2017 г., 17:15
 -- Версия сервера: 5.7.14
 -- Версия PHP: 7.0.10
 
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- База данных: `warehouses`
+-- База данных: `csv`
 --
 
 -- --------------------------------------------------------
@@ -30,16 +30,8 @@ CREATE TABLE `products` (
   `id` int(11) NOT NULL,
   `product_name` varchar(256) NOT NULL,
   `qty` int(11) NOT NULL,
-  `wh_id` int(11) NOT NULL
+  `w_id` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
---
--- Дамп данных таблицы `products`
---
-
-INSERT INTO `products` (`id`, `product_name`, `qty`, `wh_id`) VALUES
-(1, 'Product 1', 255, 1),
-(2, 'Product 2', 38, 2);
 
 -- --------------------------------------------------------
 
@@ -48,17 +40,9 @@ INSERT INTO `products` (`id`, `product_name`, `qty`, `wh_id`) VALUES
 --
 
 CREATE TABLE `warehouses` (
-  `w_id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `warehouses` varchar(256) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
---
--- Дамп данных таблицы `warehouses`
---
-
-INSERT INTO `warehouses` (`w_id`, `warehouses`) VALUES
-(1, 'WH1'),
-(2, 'WH2');
 
 --
 -- Индексы сохранённых таблиц
@@ -74,7 +58,7 @@ ALTER TABLE `products`
 -- Индексы таблицы `warehouses`
 --
 ALTER TABLE `warehouses`
-  ADD PRIMARY KEY (`w_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
@@ -84,12 +68,12 @@ ALTER TABLE `warehouses`
 -- AUTO_INCREMENT для таблицы `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=297;
 --
 -- AUTO_INCREMENT для таблицы `warehouses`
 --
 ALTER TABLE `warehouses`
-  MODIFY `w_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=463;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

@@ -1,10 +1,10 @@
 ﻿<meta charset="utf-8">
 <?php
-  ini_set('error_reporting',E_ALL);
-  ini_set('display_errors',1);
-  ini_set('display_startup_errors',1);
-  include("database.php");
-  include("function.php");
+  ini_set('error_reporting', E_ALL);
+  ini_set('display_errors', 1);
+  ini_set('display_startup_errors', 1);
+  include('database.php');
+  include('function.php');
 ?>
 <html lang="ru">
   <head>
@@ -40,7 +40,7 @@
           </tr>
         </thead>
         <?php
-          $number=1;
+          $number = 1;
           $products = get_products();
         ?>
         <?php foreach($products as $product):?>
@@ -59,8 +59,8 @@
 </html>
 
 <?php
-  if (isset($_FILES["filename"])) {
-    for ($i = 0; $i < count($_FILES["filename"]["name"]); $i++) {
+  if (isset($_FILES['filename'])) {
+    for ($i = 0; $i < count($_FILES['filename']['name']); $i++) {
       foreach ($_FILES['filename'] as $_FILES['filename'][$i]) {
         $valid_types =  array('text','csv');
         $uploads_dir = 'files/';
@@ -68,15 +68,14 @@
         $ext = substr($name, 1 + strrpos($name, "."));
         if (is_uploaded_file($_FILES['filename']['tmp_name'][$i])) {
           if ($_FILES['filename']['size'][$i] > ini_get('post_max_size')*1024*1024 ) {
-            echo "<div class='alert alert-danger col-md-12 text-center'>Error: File size > 8MB.</div>";
+            $messangers['size'] = '<div class="alert alert-danger col-md-12 text-center">Error: File size > 8MB.</div>';
           }
           elseif (!in_array($ext, $valid_types)) {
-            echo "<div class='alert alert-danger col-md-12 text-center'>Error: Invalid file type.</div>";
+            $messangers['type'] =  '<div class="alert alert-danger col-md-12 text-center">Error: Invalid file type.</div>';
           }
-          elseif (!$massage_displayed) {		
+          else {		
             move_uploaded_file($_FILES['filename']['tmp_name'][$i], $uploads_dir.$name);
-            echo "<div class='alert alert-success col-md-12 text-center'>Moved file to destination directory</div>";
-            $massage_displayed = true;
+            $messangers['success'] = '<div class="alert alert-success col-md-12 text-center">Moved file to destination directory</div>';
             $file = file_get_contents($uploads_dir.$name);
             $lines = explode(PHP_EOL, $file);
             $array = array();
@@ -91,26 +90,36 @@
             foreach ($array as $row) {
               $row = str_getcsv($row, ";");
               if ( is_numeric ($row[1]) && is_string ($row[0]) && is_string($row[2])) {
-                $result = mysqli_query($mysqli, 'SELECT * FROM products p 
-                                                  INNER JOIN warehouses  w 
-                                                  ON p.wh_id = w.w_id
-                                                  WHERE p.product_name="' . $row[0] . '" and w.warehouses="' . $row[2] . '"');
+                $result = mysqli_query($mysqli, "SELECT * FROM products  p 
+                                                 INNER JOIN warehouses  w 
+                                                 ON p.w_id = w.id 
+                                                 WHERE product_name='" . $row[0] . "' and warehouses='" . $row[2] . "'");
                 $myrow = mysqli_fetch_array($result);
-                if (!empty($myrow['id'])) {
+                if (!empty($myrow['w_id'])) {
                   $qty = $row[1] + $myrow['qty'];
-                  if (!$mysqli->query('UPDATE products  SET qty="' . $qty . '" WHERE id="' . $myrow['id'] . '"')) echo "Erorr (" . $mysqli->errno . ") " . $mysqli->error;
+                  if (!$mysqli->query("UPDATE products SET qty='" . $qty . "' WHERE w_id='" . $myrow['w_id'] . "'")) echo "Erorr (" . $mysqli->errno . ") " . $mysqli->error;
                 }
-                else {
-                  if (!$mysqli->query("INSERT  products (product_name, qty, warehouses) VALUES ('$row[0]', '$row[1]', '$row[2]')")) echo "Erorr (" . $mysqli->errno . ") " . $mysqli->error;
+                else{
+                  if (!$mysqli->query("INSERT INTO warehouses (warehouses) VALUES('$row[2]')")) echo "Error (" . $mysqli->errno . ") " . $mysqli->error;
+                  $id = mysqli_query($mysqli, "SELECT id FROM warehouses WHERE warehouses = '" . $row[2]  . "'");
+                  $myid = mysqli_fetch_array($id);
+                  if (!$mysqli->query("INSERT INTO products  (product_name, qty, w_id ) VALUES ('$row[0]', '$row[1]', '" . $myid['id']  . "')")) echo "Error (" . $mysqli->errno . ") " . $mysqli->error;
                 }
               }  
               else {
-                echo ("<div class='alert alert-danger col-md-12 text-center'>File data not valid</div>");
+                $messangers['data'] = '<div class="alert alert-danger col-md-12 text-center">File data not valid</div>';
               }
             }
-          }
+          } 
+        unlink($uploads_dir.$name);
         }
       }
     }
-  }
+    $messangers = array();
+    foreach($messangers as $message) {
+      echo $message ;
+    }
+  }  
+  
+  
 
