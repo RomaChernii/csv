@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Авг 07 2017 г., 17:15
+-- Время создания: Авг 12 2017 г., 10:07
 -- Версия сервера: 5.7.14
 -- Версия PHP: 7.0.10
 
@@ -27,11 +27,22 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `products` (
-  `id` int(11) NOT NULL,
-  `product_name` varchar(256) NOT NULL,
+  `prod_id` int(11) NOT NULL,
+  `product_name` varchar(256) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `quantity`
+--
+
+CREATE TABLE `quantity` (
+  `q_id` int(11) NOT NULL,
   `qty` int(11) NOT NULL,
-  `w_id` int(11) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  `prod_id` int(11) NOT NULL,
+  `wh_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -40,9 +51,9 @@ CREATE TABLE `products` (
 --
 
 CREATE TABLE `warehouses` (
-  `id` int(11) NOT NULL,
+  `wh_id` int(11) NOT NULL,
   `warehouses` varchar(256) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Индексы сохранённых таблиц
@@ -52,13 +63,19 @@ CREATE TABLE `warehouses` (
 -- Индексы таблицы `products`
 --
 ALTER TABLE `products`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`prod_id`);
+
+--
+-- Индексы таблицы `quantity`
+--
+ALTER TABLE `quantity`
+  ADD PRIMARY KEY (`q_id`);
 
 --
 -- Индексы таблицы `warehouses`
 --
 ALTER TABLE `warehouses`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`wh_id`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
@@ -68,12 +85,17 @@ ALTER TABLE `warehouses`
 -- AUTO_INCREMENT для таблицы `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=297;
+  MODIFY `prod_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=380;
+--
+-- AUTO_INCREMENT для таблицы `quantity`
+--
+ALTER TABLE `quantity`
+  MODIFY `q_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 --
 -- AUTO_INCREMENT для таблицы `warehouses`
 --
 ALTER TABLE `warehouses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=463;
+  MODIFY `wh_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=743;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

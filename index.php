@@ -12,7 +12,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Warehouses</title>
-    <link href="/public/css/bootstrap.css" rel="stylesheet">
+    <link href="public/css/bootstrap.css" rel="stylesheet">
   </head>
   <body>
     <div class="navbar navbar-default navbar-static-top">
@@ -41,18 +41,18 @@
         </thead>
         <?php
           $number = 1;
-          $products = get_products();
+         // $products = get_products();
         ?>
-        <?php foreach($products as $product):?>
+        <?php while($row = $stmt->fetch()):?>
         <tbody>
           <tr class="bg-success">
             <th scope="row"><?=$number++?></th>
-            <td><?=$product['product_name']?></td>
-            <td><?=$product['qty']?></td>
-            <td><?=$product['warehouses']?></td>
+            <td><?=$row['product_name']?></td>
+            <td><?=$row['qty']?></td>
+            <td><?=$row['warehouses']?></td>
           </tr>
         </tbody>
-        <?php endforeach;?>
+        <?php endwhile;?>
       </table>
     </div>
   </body>
@@ -63,7 +63,7 @@
     for ($i = 0; $i < count($_FILES['filename']['name']); $i++) {
       foreach ($_FILES['filename'] as $_FILES['filename'][$i]) {
         $valid_types =  array('text','csv');
-        $uploads_dir = 'files/';
+        $uploads_dir = '/files';
         $name = $_FILES['filename']['name'][$i];
         $ext = substr($name, 1 + strrpos($name, "."));
         if (is_uploaded_file($_FILES['filename']['tmp_name'][$i])) {
@@ -86,32 +86,40 @@
               $line = str_getcsv($line);
               $array[] = reset($line);
             }
-            $mysqli = $GLOBALS['link'];
             foreach ($array as $row) {
-              $row = str_getcsv($row, ";");
-              if ( is_numeric ($row[1]) && is_string ($row[0]) && is_string($row[2])) {
-                $result = mysqli_query($mysqli, "SELECT * FROM products  p 
-                                                 INNER JOIN warehouses  w 
-                                                 ON p.w_id = w.id 
-                                                 WHERE product_name='" . $row[0] . "' and warehouses='" . $row[2] . "'");
-                $myrow = mysqli_fetch_array($result);
-                if (!empty($myrow['w_id'])) {
+            $row = str_getcsv($row, ";");
+            if ( is_numeric ($row[1]) && is_string ($row[0]) && is_string($row[2])) {
+              $stmt = $db->query("SELECT * FROM quantity q
+                                                 INNER JOIN products p ON q.prod_id = p.prod_id
+                                                 INNER JOIN warehouses w ON q.wh_id = w.wh_id 
+                                                 WHERE product_name= '".$row[0]."'  and warehouses= '".$row[2]."'");
+              while($myrow = $stmt->fetch()){
+                if (!empty($myrow['wh_id']) && !empty($myrow['prod_id'])) {
                   $qty = $row[1] + $myrow['qty'];
-                  if (!$mysqli->query("UPDATE products SET qty='" . $qty . "' WHERE w_id='" . $myrow['w_id'] . "'")) echo "Erorr (" . $mysqli->errno . ") " . $mysqli->error;
+                  $stmt = $db->query("UPDATE quantity SET qty='".$qty."'  WHERE prod_id = '".$myrow['prod_id']."'  and wh_id = '".$myrow['wh_id']."' "); 
+               
                 }
                 else{
-                  if (!$mysqli->query("INSERT INTO warehouses (warehouses) VALUES('$row[2]')")) echo "Error (" . $mysqli->errno . ") " . $mysqli->error;
-                  $id = mysqli_query($mysqli, "SELECT id FROM warehouses WHERE warehouses = '" . $row[2]  . "'");
-                  $myid = mysqli_fetch_array($id);
-                  if (!$mysqli->query("INSERT INTO products  (product_name, qty, w_id ) VALUES ('$row[0]', '$row[1]', '" . $myid['id']  . "')")) echo "Error (" . $mysqli->errno . ") " . $mysqli->error;
+                  var_dump($row[2]);
+                  $stmt = $db->query("INSERT INTO products (product_name) VALUES ('$row[0]')");
+                  $stmt = $db->query("SELECT prod_id FROM products WHERE product_name = '" . $row[0]  . "'");
+                  while($myid_prod = $stmt->fetch()){
+                    var_dump($myid_prod['prod_id']);
+                    $stmt = $db->query("INSERT INTO warehouses (warehouses) VALUES('$row[2]')");
+                    $stmt = $db->query("SELECT wh_id FROM warehouses WHERE warehouses = '" . $row[2]  . "'");
+                    while($myid_wh = $stmt->fetch()){
+                      $stmt = $db->query("INSERT INTO quantity  (qty, prod_id, wh_id) VALUES ('$row[1]', '" . $myid_prod['prod_id'] . "', '" . $myid_wh['wh_id']  . "')");
+                    }
+                  }
                 }
               }  
-              else {
-                $messangers['data'] = '<div class="alert alert-danger col-md-12 text-center">File data not valid</div>';
-              }
+            }
+            else {
+              $messangers['data'] = '<div class="alert alert-danger col-md-12 text-center">File data not valid</div>';
             }
           } 
-        @unlink($uploads_dir.$name);}
+          @unlink($uploads_dir.$name);}
+        }
       }
     }
     if (isset ($messangers)) {
@@ -119,7 +127,4 @@
         echo $message ;
       }
     }
-  }  
-  
-  
-
+  }
